@@ -1,14 +1,16 @@
+import { createSupabaseClient } from "@/auth/server";
 import SignOutButton from "@/components/SignOutButton";
 import Link from "next/link";
 
 async function HomePage() {
-  const user = null;
+  const {data} = await (await createSupabaseClient()).auth.getUser();
+  const user = data?.user
 
   return (
     <>
       {user ? (
         <div className="flex flex-col items-center gap-4">
-          <p>User is logged in as</p>
+          <p>User is logged in as {user.email || 'null'}</p>
 
           <SignOutButton />
         </div>
