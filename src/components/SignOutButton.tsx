@@ -6,6 +6,7 @@ import {useRouter} from 'next/navigation'
 import { useTransition } from 'react';
 import toast from 'react-hot-toast';
 import {signOutAction} from '@/actions/users'
+import { Loader2 } from 'lucide-react';
 
 function SignOutButton() {
   const router = useRouter();
@@ -26,8 +27,9 @@ function SignOutButton() {
     <button
       onClick={handleClickSignOutButton}
       className="rounded-lg p-2 text-white flex justify-center bg-emerald-700 w-40"
+      disabled={isPending}
     >
-      Sign Out
+      {isPending ? <Loader2 className='animate-spin'/> : 'Sign Out'}
     </button>
   );
 }
