@@ -1,16 +1,20 @@
-import { createSupabaseClient } from "@/auth/server";
+"use client";
+
+// import { getUser } from "@/auth/server";
+import { User } from "@supabase/supabase-js";
+import { getUser } from "@/auth/client";
+import { useSupabase } from "@/auth/SupabaseProvider";
 import SignOutButton from "@/components/SignOutButton";
 import Link from "next/link";
 
-async function HomePage() {
-  const {data} = await (await createSupabaseClient()).auth.getUser();
-  const user = data?.user
-
+function HomePage() {
+  const { user } = useSupabase();
+  console.log(user);
   return (
     <>
       {user ? (
         <div className="flex flex-col items-center gap-4">
-          <p>User is logged in as {user.email || 'null'}</p>
+          <p>User is logged in as {user.email || "null"}</p>
 
           <SignOutButton />
         </div>
