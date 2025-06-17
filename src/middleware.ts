@@ -50,6 +50,9 @@ export async function middleware(request: NextRequest) {
         }).headers
       )
     );
+    console.log(
+      `python route requested ${path}\nrewriting request to ${externalUrl}`
+    );
     // expect
     // {'user-id': '' }//type uuid within the headers
     // TODO: confirm header 'user-id' is passed correctly to server (console log reqs on server?)
