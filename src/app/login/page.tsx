@@ -8,36 +8,68 @@ import toast from "react-hot-toast";
 import { loginAction } from "@/actions/users";
 import { useRouter } from "next/navigation";
 import { useFormStatus, useFormState } from "react-dom";
-import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
+import {
+  createFormHook,
+  createFormHookContexts,
+  FormState,
+} from "@tanstack/react-form";
 
-const SubmitButton = () => {
-  const status = useFormStatus();
+const SubmitButton = ({ form }: { form: any }) => {
   return (
-    <button
-      className="rounded-lg p-2 mt-4 bg-black text-white flex justify-center"
-      disabled={status.pending}
-    >
-      {status.pending ? <Loader2 className="animate-spin" /> : "Login"}
-    </button>
+    <form.Subscribe>
+      {({
+        canSubmit,
+        isSubmitting,
+      }: {
+        canSubmit: boolean;
+        isSubmitting: boolean;
+      }) => (
+        <button
+          className="rounded-lg p-2 mt-4 bg-black text-white flex justify-center disabled:cursor-not-allowed"
+          disabled={!canSubmit || isSubmitting}
+        >
+          {isSubmitting ? <Loader2 className="animate-spin" /> : "Login"}
+        </button>
+      )}
+    </form.Subscribe>
   );
 };
-const TextField = ({ label }: { label: string }) => {
-  const status = useFormStatus();
+const TextField = ({
+  label,
+  field,
+  type,
+}: {
+  label: string;
+  field?: any;
+  type?: string;
+}) => {
+  // Log the full error objects for debugging
+  // console.log(`${label} field.state.meta.errors:`, field.state.meta.errors.map);
+  // field.state.meta.errors.map((err: any) =>
+  //   console.log(JSON.stringify(err.message, null, 2))
+  // );
+  // const errors = field.state.meta.errors;
   return (
     <>
       <input
-        type="text"
-        name={label}
-        className="rounded-lg p-2"
+        type={type || "text"}
+        name={label.toLowerCase()}
+        className="rounded-lg p-2 mt-2 first:mt-0 last:mb-0"
         placeholder={label}
-        disabled={status.pending}
+        value={field?.state.value}
+        onChange={(e) => field?.handleChange(e.target.value)}
+        onBlur={(e) => field?.handleBlur?.()}
       />
+      {!field.state.meta.isValid && (
+        <div className="text-red-500 font-bold text-sm">
+          {JSON.stringify(field.state.meta.errors[0]?.message, null, 2)};
+        </div>
+      )}
     </>
   );
 };
 
 const NumberField = ({ label }: { label: string }) => {
-  const status = useFormStatus();
   return (
     <>
       <input
@@ -45,7 +77,6 @@ const NumberField = ({ label }: { label: string }) => {
         name={label}
         className="rounded-lg p-2"
         placeholder={label}
-        disabled={status.pending}
       />
     </>
   );
@@ -58,7 +89,7 @@ const { useAppForm } = createFormHook({
     NumberField,
   },
   formComponents: {
-    SubmitButton,
+    SubmitButton: ({ form }: { form: any }) => <SubmitButton form={form} />,
   },
   fieldContext,
   formContext,
@@ -100,13 +131,22 @@ function LoginPage() {
       password: "",
     },
     validators: {
-      onChange: LoginSchema,
+      onBlur: LoginSchema,
     },
     onSubmit: ({ value }) => {
       alert(JSON.stringify(value, null, 2));
-      loginAction;
+      // loginAction;
+      console.log(value);
     },
+    // onSubmitInvalid: ({ value }) => {
+    //   alert("invalid submission\n");
+    //   console.log(
+    //     new Error("invalid submission\n" + JSON.stringify(value, null, 2))
+    //   );
+    //   console.log(value);
+    // },
   });
+
   return (
     <div className="bg-emerald-700 w-96 rounded-lg p-8">
       <h1 className="text-2xl text-center mb-8">Login</h1>
@@ -119,14 +159,17 @@ function LoginPage() {
       >
         <form.AppField
           name="email"
-          children={(field) => <field.TextField label="Email" />}
+          children={(field) => <field.TextField label="Email" field={field} />}
         />
+
         <form.AppField
           name="password"
-          children={(field) => <field.TextField label="password" />}
+          children={(field) => (
+            <field.TextField label="Password" field={field} type="password" />
+          )}
         />
         <form.AppForm>
-          <form.SubmitButton />
+          <form.SubmitButton form={form} />
         </form.AppForm>
       </form>
       {/* <form
