@@ -29,10 +29,10 @@ function LoginPage() {
 
     // console.log("\n\nform data\n", formData);
     const result = await loginAction(formData);
-    const { formErrors, fieldErrors } = result;
+    const { errorMessage } = result;
 
-    if (formErrors || fieldErrors) {
-      formErrors.forEach((err) => toast.error(err));
+    if (errorMessage) {
+      // formErrors.forEach((err) => toast.error(err));
       toast.error(errorMessage);
     } else {
       router.push("/");
