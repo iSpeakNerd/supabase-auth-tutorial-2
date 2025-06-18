@@ -1,4 +1,3 @@
-import { SupabaseProvider } from "@/auth/SupabaseProvider";
 import Link from "next/link";
 
 function Header() {

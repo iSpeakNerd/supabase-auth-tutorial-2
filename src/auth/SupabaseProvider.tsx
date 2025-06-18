@@ -24,10 +24,14 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
 
   //   update in time
   auth.onAuthStateChange((event, session) => {
-    console.log("auth changed, user= ", user);
-    setUser(session?.user ?? null);
+    if (
+      event === "SIGNED_IN" ||
+      event === "SIGNED_OUT" ||
+      event === "USER_UPDATED"
+    )
+      setUser(session?.user ?? null);
   });
-  console.log("user is ", user);
+
   return (
     <SupabaseContext.Provider value={{ user }}>
       {children}
