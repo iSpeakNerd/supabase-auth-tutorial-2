@@ -5,7 +5,7 @@ import Link from "next/link";
 // import { useTransition } from "react";
 import { z } from "zod";
 import toast from "react-hot-toast";
-import { loginAction } from "@/actions/users";
+import { loginAction, loginActionT } from "@/actions/users";
 import { useRouter } from "next/navigation";
 import { useFormStatus, useFormState } from "react-dom";
 import {
@@ -102,6 +102,7 @@ export const LoginSchema = z.object({
     .min(8, { message: "Must be 8 characters or more" })
     .max(32, { message: "Must be 32 characters or less" }),
 });
+export type Login = z.infer<typeof LoginSchema>;
 
 function LoginPage() {
   const router = useRouter();
@@ -133,10 +134,19 @@ function LoginPage() {
     validators: {
       onBlur: LoginSchema,
     },
-    onSubmit: ({ value }) => {
-      alert(JSON.stringify(value, null, 2));
-      // loginAction;
+    onSubmit: async ({ value }) => {
+      // alert(JSON.stringify(value, null, 2));
+      // await loginAction(value);
       console.log(value);
+      const { errorMessage } = await loginActionT(value);
+
+      if (errorMessage) {
+        // formErrors.forEach((err) => toast.error(err));
+        toast.error(errorMessage);
+      } else {
+        router.push("/");
+        toast.success("Successfully logged in.");
+      }
     },
     // onSubmitInvalid: ({ value }) => {
     //   alert("invalid submission\n");
