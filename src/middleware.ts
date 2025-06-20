@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
+import { NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+// import { redirect } from "next/navigation";
+// import { headers } from "next/headers";
 
 export async function middleware(request: NextRequest) {
   // wrap as NextResponse
@@ -11,9 +11,9 @@ export async function middleware(request: NextRequest) {
 
   const path = new URL(request.url).pathname;
 
-  const protectedRoutes = ['/protected'];
-  const authRoutes = ['/login', '/create-account'];
-  const pythonRoutes = ['/api/python'];
+  const protectedRoutes = ["/protected"];
+  const authRoutes = ["/login", "/create-account"];
+  const pythonRoutes = ["/api/python"];
 
   //   exact match only
   const isProtectedRoute = protectedRoutes.includes(path);
@@ -26,36 +26,35 @@ export async function middleware(request: NextRequest) {
   if (isProtectedRoute) {
     // still passing the response to allow cookie setting for db client (current jwt)
     if (!user) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
     return NextResponse.next();
   }
   if (isPythonRoute) {
     if (!user) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
     //proxy the api/python path to external domain
-    const routePath = path.replace('/api/python', '');
+    const routePath = path.replace("/api/python", "");
     const externalUrl = new URL(
       `/api${routePath}`,
       process.env.EXTERNAL_PYTHON_URL
     );
+    //! Next passes sb auth as "cookie" header in request
     // const extHeaders = new Headers(request.headers);
     // extHeaders.set('user-id', `${user.id}`);
     // console.log(extHeaders);
-    console.log(
-      JSON.stringify(
-        NextResponse.rewrite(externalUrl, {
-          request: { headers: request.headers },
-        }).headers
-      )
-    );
+    // console.log(
+    //   JSON.stringify(
+    //     NextResponse.rewrite(externalUrl, {
+    //       request: { headers: request.headers },
+    //     }).headers
+    //   )
+    // );
     console.log(
       `python route requested ${path}\nrewriting request to ${externalUrl}`
     );
-    // expect
-    // {'user-id': '' }//type uuid within the headers
-    // TODO: confirm header 'user-id' is passed correctly to server (console log reqs on server?)
+
     return NextResponse.rewrite(externalUrl, {
       request: { headers: request.headers },
     });
@@ -64,7 +63,7 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       return NextResponse.next();
     } else {
-      return NextResponse.redirect(new URL('/', request.url));
+      return NextResponse.redirect(new URL("/", request.url));
     }
   }
   return NextResponse.next();
@@ -81,7 +80,7 @@ export const config = {
      * - favicon.ico (favicon file)
      * Feel free to modify this pattern to include more paths.
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
 
@@ -127,12 +126,12 @@ export async function updateSession(request: NextRequest) {
 
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth')
+    !request.nextUrl.pathname.startsWith("/login") &&
+    !request.nextUrl.pathname.startsWith("/auth")
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
-    url.pathname = '/login';
+    url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
