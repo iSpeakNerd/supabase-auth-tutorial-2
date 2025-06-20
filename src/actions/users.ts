@@ -13,7 +13,7 @@ const LoginSchema = z.object({
     .min(8, { message: "Must be 8 characters or more" })
     .max(32, { message: "Must be 32 characters or less" }),
 });
-const Login = z.infer<typeof LoginSchema>;
+type Login = z.infer<typeof LoginSchema>;
 
 export async function createAccountAction(formData: FormData) {
   try {
