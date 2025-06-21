@@ -3,7 +3,7 @@
 import { Loader2, LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { z } from "zod";
-import { type Login, LoginSchema } from "@/actions/users";
+// import { type Login, LoginSchema } from "@/actions/users";
 import toast from "react-hot-toast";
 import { loginActionT } from "@/actions/users";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,15 @@ import {
   FormState,
   useField,
 } from "@tanstack/react-form";
+
+const LoginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .min(8, { message: "Must be 8 characters or more" })
+    .max(32, { message: "Must be 32 characters or less" }),
+});
+type Login = z.infer<typeof LoginSchema>;
 
 const SubmitButton = ({ form }: { form: any }) => {
   return (

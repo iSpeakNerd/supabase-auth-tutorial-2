@@ -4,7 +4,8 @@ import { createSupabaseClient } from "@/auth/server";
 import { getErrorMessage } from "@/lib/utils";
 import { z } from "zod";
 
-export { type Login, LoginSchema };
+// TODO add tRPC to sync types across client/server boundary
+// export { type Login, LoginSchema };
 
 const LoginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
