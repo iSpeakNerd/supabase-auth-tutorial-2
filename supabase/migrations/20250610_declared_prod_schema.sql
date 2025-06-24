@@ -4,6 +4,8 @@ CREATE TABLE IF NOT EXISTS public.audio (
     created_at timestamp with time zone null default now(),
     user_id uuid not null,
     skip_minutes smallint null,
+    description text,
+    name text,
     id uuid not null default gen_random_uuid (),
     constraint audio_pkey primary key (id),
     constraint audio_id_key unique (id),
