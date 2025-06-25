@@ -92,6 +92,8 @@ CREATE TABLE IF NOT EXISTS public.tasks (
 CREATE OR REPLACE VIEW public.aggregated_pipeline_runs AS
 SELECT 
   run_id,
+  user_id, 
+  audio_id,
   jsonb_agg(data) AS aggregated_data,
   jsonb_object_agg(stage, data) AS data_by_stage,
   min(created_at) AS first_timestamp,
@@ -99,4 +101,4 @@ SELECT
 FROM 
   public.pipeline_runs
 GROUP BY 
-  run_id;
+  run_id, user_id, audio_id;
