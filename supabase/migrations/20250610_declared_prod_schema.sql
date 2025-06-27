@@ -91,14 +91,22 @@ CREATE TABLE IF NOT EXISTS public.tasks (
 
 CREATE OR REPLACE VIEW public.aggregated_pipeline_runs AS
 SELECT 
-  run_id,
-  user_id, 
-  audio_id,
-  jsonb_agg(data) AS aggregated_data,
-  jsonb_object_agg(stage, data) AS data_by_stage,
-  min(created_at) AS first_timestamp,
-  max(created_at) AS last_timestamp
+  pr.run_id,
+  pr.user_id, 
+  pr.audio_id,
+  -- Add audio metadata fields here
+  a.name AS audio_name,
+  a.description AS audio_description,
+  a.skip_minutes AS audio_skip_minutes,
+  a.url AS audio_url,
+  ---
+  jsonb_agg(pr.data) AS aggregated_data,
+  jsonb_object_agg(pr.stage, pr.data) AS data_by_stage,
+  min(pr.created_at) AS first_timestamp,
+  max(pr.created_at) AS last_timestamp
 FROM 
-  public.pipeline_runs
+  public.pipeline_runs pr
+JOIN
+  public.audio a ON pr.audio_id = a.id
 GROUP BY 
-  run_id, user_id, audio_id;
+  pr.run_id, pr.user_id, pr.audio_id, a.name, a.description, a.skip_minutes, a.url;
